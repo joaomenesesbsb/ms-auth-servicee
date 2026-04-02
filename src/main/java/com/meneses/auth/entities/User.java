@@ -1,4 +1,4 @@
-package com.meneses.auth.entity;
+package com.meneses.auth.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
