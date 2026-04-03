@@ -16,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -31,15 +32,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("bearer")) {
+        if (authHeader == null || !authHeader.startsWith("bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
         String token = authHeader.substring(7);
         String email = jwtService.extractUsername(token);
-        String role = jwtService.extractRole(token);
-        List<GrantedAuthority> authorities =
-                List.of(new SimpleGrantedAuthority(role));
+        List<String> roles = jwtService.extractRoles(token);
+        List<GrantedAuthority> authorities = roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
 
         if (email != null) {
             User user = userRepository.findByEmail(email)

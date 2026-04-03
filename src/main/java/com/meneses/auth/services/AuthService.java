@@ -2,6 +2,7 @@ package com.meneses.auth.services;
 
 import com.meneses.auth.dto.LoginRequest;
 import com.meneses.auth.dto.LoginResponse;
+import com.meneses.auth.entities.Role;
 import com.meneses.auth.entities.User;
 import com.meneses.auth.repositories.UserRepository;
 import com.meneses.auth.security.JwtService;
@@ -25,9 +26,14 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
 
-        // Buscar usuário
+        // Buscar usuario
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        // Busca roles do usuario
+        List<String> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .toList();
 
         // Validar senha
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -41,6 +47,6 @@ public class AuthService {
         String refreshToken = jwtService.generateRefreshToken(user);
 
         // Retornar resposta
-        return new LoginResponse(token, refreshToken, List.of(user.getRole()));
+        return new LoginResponse(token, refreshToken, roles);
     }
 }

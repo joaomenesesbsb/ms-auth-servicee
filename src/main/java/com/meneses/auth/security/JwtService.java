@@ -1,6 +1,7 @@
 package com.meneses.auth.security;
 
 
+import com.meneses.auth.entities.Role;
 import com.meneses.auth.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
 
 @Service
@@ -26,9 +28,14 @@ public class JwtService {
 
     // gerar token
     public String generateToken(User user) {
+
+        List<String> roles = user.getRoles().stream()
+                .map(role -> role.getName())
+                .toList();
+
         return Jwts.builder()
                 .setSubject(user.getEmail())
-                .claim("role", user.getRole().name())
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(getSignInKey())
@@ -62,8 +69,8 @@ public class JwtService {
         return username.equals(user.getEmail()) && !isTokenExpired(token);
     }
 
-    public String extractRole(String token) {
-        return extractAllClaims(token).get("role", String.class);
+    public List<String> extractRoles(String token) {
+        return extractAllClaims(token).get("roles", List.class);
     }
 
     private boolean isTokenExpired(String token) {

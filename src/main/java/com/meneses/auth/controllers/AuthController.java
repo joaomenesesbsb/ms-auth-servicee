@@ -18,12 +18,5 @@ public class AuthController {
         LoginResponse loginResponse = authService.login(request);
         return ResponseEntity.ok(loginResponse);
     }
-    @GetMapping("/admin/teste")
-    public String testeAdmin() {
-        return "Acesso liberado para ADMIN";
-    }
-    @GetMapping("/admin/user")
-    public String testeUser() {
-        return "Acesso liberado para User";
-    }
+
 }
