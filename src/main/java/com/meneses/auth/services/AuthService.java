@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AuthService {
 
@@ -38,10 +40,7 @@ public class AuthService {
         // Gerar refresh token
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        System.out.println("Senha digitada: " + request.getPassword());
-        System.out.println("Senha banco: " + user.getPassword());
-
         // Retornar resposta
-        return new LoginResponse(token, refreshToken);
+        return new LoginResponse(token, refreshToken, List.of(user.getRole()));
     }
 }
