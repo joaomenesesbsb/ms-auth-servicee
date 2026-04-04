@@ -25,8 +25,43 @@ public class UserController {
     private UserService userService;
 
     @Operation(
+            summary = "Busca usuario por id",
+            description = "Busca usuario por id no bbanco de dados"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserResponse.class)
+                    )),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuário não encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Acesso negado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    ))
+    })
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
+        UserResponse response = userService.findById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
             summary = "Adicionar Role",
-            description = "Adiciona Role ao usuario existente no banco"
+            description = "Adiciona Role ao usuario existente no banco de dados"
     )
     @ApiResponses(value = {
             @ApiResponse(
