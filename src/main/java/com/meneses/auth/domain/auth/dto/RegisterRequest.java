@@ -1,4 +1,4 @@
-package com.meneses.auth.dto;
+package com.meneses.auth.domain.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

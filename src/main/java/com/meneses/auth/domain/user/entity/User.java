@@ -1,5 +1,6 @@
-package com.meneses.auth.entities;
+package com.meneses.auth.domain.user.entity;
 
+import com.meneses.auth.domain.role.entity.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +9,6 @@ import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter

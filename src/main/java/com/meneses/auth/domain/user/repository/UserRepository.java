@@ -1,6 +1,6 @@
-package com.meneses.auth.repositories;
+package com.meneses.auth.domain.user.repository;
 
-import com.meneses.auth.entities.User;
+import com.meneses.auth.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

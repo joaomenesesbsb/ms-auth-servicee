@@ -1,8 +1,7 @@
 package com.meneses.auth.security;
 
-import com.meneses.auth.entities.User;
-import com.meneses.auth.repositories.UserRepository;
-import com.meneses.auth.services.AuthService;
+import com.meneses.auth.domain.user.entity.User;
+import com.meneses.auth.domain.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,8 +1,7 @@
 package com.meneses.auth.security;
 
 
-import com.meneses.auth.entities.Role;
-import com.meneses.auth.entities.User;
+import com.meneses.auth.domain.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

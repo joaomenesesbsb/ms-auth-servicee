@@ -1,10 +1,10 @@
-package com.meneses.auth.controllers;
+package com.meneses.auth.domain.auth.controller;
 
-import com.meneses.auth.dto.LoginRequest;
-import com.meneses.auth.dto.LoginResponse;
-import com.meneses.auth.dto.RegisterRequest;
-import com.meneses.auth.dto.UserResponse;
-import com.meneses.auth.services.AuthService;
+import com.meneses.auth.domain.auth.service.AuthService;
+import com.meneses.auth.domain.auth.dto.LoginRequest;
+import com.meneses.auth.domain.auth.dto.LoginResponse;
+import com.meneses.auth.domain.auth.dto.RegisterRequest;
+import com.meneses.auth.domain.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 @Tag(name = "Autenticacao", description = "Endpoints de login e registro")
 @RestController
 @RequestMapping("/auth")

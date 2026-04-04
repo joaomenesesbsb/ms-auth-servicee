@@ -1,11 +1,11 @@
-package com.meneses.auth.services;
+package com.meneses.auth.domain.user.service;
 
-import com.meneses.auth.dto.UserResponse;
-import com.meneses.auth.entities.Role;
-import com.meneses.auth.entities.User;
+import com.meneses.auth.domain.role.entity.Role;
 import com.meneses.auth.exceptions.ResourceNotFoundException;
-import com.meneses.auth.repositories.RoleRepository;
-import com.meneses.auth.repositories.UserRepository;
+import com.meneses.auth.domain.role.repository.RoleRepository;
+import com.meneses.auth.domain.user.entity.User;
+import com.meneses.auth.domain.user.dto.UserResponse;
+import com.meneses.auth.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

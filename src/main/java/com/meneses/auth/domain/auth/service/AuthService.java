@@ -1,14 +1,14 @@
-package com.meneses.auth.services;
+package com.meneses.auth.domain.auth.service;
 
-import com.meneses.auth.dto.LoginRequest;
-import com.meneses.auth.dto.LoginResponse;
-import com.meneses.auth.dto.RegisterRequest;
-import com.meneses.auth.dto.UserResponse;
-import com.meneses.auth.entities.Role;
-import com.meneses.auth.entities.User;
+import com.meneses.auth.domain.auth.dto.LoginRequest;
+import com.meneses.auth.domain.auth.dto.LoginResponse;
+import com.meneses.auth.domain.auth.dto.RegisterRequest;
+import com.meneses.auth.domain.user.dto.UserResponse;
+import com.meneses.auth.domain.role.entity.Role;
+import com.meneses.auth.domain.user.entity.User;
 import com.meneses.auth.exceptions.ResourceNotFoundException;
-import com.meneses.auth.repositories.RoleRepository;
-import com.meneses.auth.repositories.UserRepository;
+import com.meneses.auth.domain.role.repository.RoleRepository;
+import com.meneses.auth.domain.user.repository.UserRepository;
 import com.meneses.auth.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,8 +1,8 @@
-package com.meneses.auth.controllers;
+package com.meneses.auth.domain.user.controller;
 
-import com.meneses.auth.dto.RoleRequest;
-import com.meneses.auth.dto.UserResponse;
-import com.meneses.auth.services.UserService;
+import com.meneses.auth.domain.user.dto.RoleRequest;
+import com.meneses.auth.domain.user.dto.UserResponse;
+import com.meneses.auth.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
