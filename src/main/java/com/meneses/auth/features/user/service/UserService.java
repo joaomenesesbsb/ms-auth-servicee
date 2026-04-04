@@ -1,16 +1,21 @@
 package com.meneses.auth.features.user.service;
 
+import com.meneses.auth.exceptions.DataBaseException;
 import com.meneses.auth.features.role.entity.Role;
 import com.meneses.auth.exceptions.ResourceNotFoundException;
 import com.meneses.auth.features.role.repository.RoleRepository;
+import com.meneses.auth.features.user.dto.UserRequestDTO;
 import com.meneses.auth.features.user.entity.User;
-import com.meneses.auth.features.user.dto.UserResponse;
+import com.meneses.auth.features.user.dto.UserResponseDTO;
 import com.meneses.auth.features.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
@@ -25,13 +30,13 @@ public class UserService {
     private RoleRepository roleRepository;
 
     @Transactional(readOnly = true)
-    public UserResponse findById(Long id){
+    public UserResponseDTO findById(Long id){
 
         User user = userRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Usuario nao encontrado com o ID: " + id)
         );
 
-        UserResponse response = new UserResponse(user.getEmail(),user.getRoles()
+        UserResponseDTO response = new UserResponseDTO(user.getEmail(),user.getRoles()
                 .stream().map(Role::getName)
                 .collect(Collectors.toList()));
 
@@ -39,15 +44,15 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Page<UserResponse> findAll(String email, Pageable pageable) {
+    public Page<UserResponseDTO> findAll(String email, Pageable pageable) {
 
         Page<User> userPage = userRepository.findByEmailContainingIgnoreCase(email, pageable);
-        return userPage.map(user -> new UserResponse(user.getEmail(),
+        return userPage.map(user -> new UserResponseDTO(user.getEmail(),
                 user.getRoles().stream().map(Role::getName).collect(Collectors.toList())));
     }
 
     @Transactional
-    public UserResponse update(Long id, UserResponse responseDto){
+    public UserResponseDTO update(Long id, UserRequestDTO responseDto){
         try{
             User entity = userRepository.getReferenceById(id);
             entity.setEmail(responseDto.getEmail());
@@ -68,8 +73,21 @@ public class UserService {
         userRepository.save(user);
     }
 
-    private UserResponse mapToResponse(User user) {
-        return new UserResponse(
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void delete(Long id){
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Usuário não encontrado com o ID: " + id);
+        }
+        try{
+            userRepository.deleteById(id);
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new DataBaseException("Não é possível remover o usuário: violação de integridade.");
+        }
+    }
+
+    private UserResponseDTO mapToResponse(User user) {
+        return new UserResponseDTO(
                 user.getEmail(),
                 user.getRoles().stream()
                         .map(Role::getName)

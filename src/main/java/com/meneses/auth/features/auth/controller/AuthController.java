@@ -1,10 +1,10 @@
 package com.meneses.auth.features.auth.controller;
 
 import com.meneses.auth.features.auth.service.AuthService;
-import com.meneses.auth.features.auth.dto.LoginRequest;
-import com.meneses.auth.features.auth.dto.LoginResponse;
-import com.meneses.auth.features.auth.dto.RegisterRequest;
-import com.meneses.auth.features.user.dto.UserResponse;
+import com.meneses.auth.features.auth.dto.LoginRequestDTO;
+import com.meneses.auth.features.auth.dto.LoginResponseDTO;
+import com.meneses.auth.features.auth.dto.RegisterRequestDTO;
+import com.meneses.auth.features.user.dto.UserResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,7 +36,7 @@ public class AuthController {
                     description = "Login realizado com sucesso",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = LoginResponse.class))),
+                            schema = @Schema(implementation = LoginResponseDTO.class))),
             @ApiResponse(
                     responseCode = "401",
                     description = "Credenciais inválidas",
@@ -57,9 +57,9 @@ public class AuthController {
                             schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        LoginResponse loginResponse = authService.login(request);
-        return ResponseEntity.ok(loginResponse);
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
+        LoginResponseDTO loginResponseDTO = authService.login(request);
+        return ResponseEntity.ok(loginResponseDTO);
     }
 
     @Operation(
@@ -72,7 +72,7 @@ public class AuthController {
                     description = "Usuário cadastrado com sucesso",
                     content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = UserResponse.class)
+                        schema = @Schema(implementation = UserResponseDTO.class)
             )),
             @ApiResponse(
                     responseCode = "400",
@@ -95,8 +95,8 @@ public class AuthController {
     })
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@RequestBody RegisterRequest request) {
-        UserResponse dto = authService.register(request);
+    public ResponseEntity<UserResponseDTO> register(@RequestBody RegisterRequestDTO request) {
+        UserResponseDTO dto = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 }

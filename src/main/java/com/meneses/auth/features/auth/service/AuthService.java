@@ -1,9 +1,9 @@
 package com.meneses.auth.features.auth.service;
 
-import com.meneses.auth.features.auth.dto.LoginRequest;
-import com.meneses.auth.features.auth.dto.LoginResponse;
-import com.meneses.auth.features.auth.dto.RegisterRequest;
-import com.meneses.auth.features.user.dto.UserResponse;
+import com.meneses.auth.features.auth.dto.LoginRequestDTO;
+import com.meneses.auth.features.auth.dto.LoginResponseDTO;
+import com.meneses.auth.features.auth.dto.RegisterRequestDTO;
+import com.meneses.auth.features.user.dto.UserResponseDTO;
 import com.meneses.auth.features.role.entity.Role;
 import com.meneses.auth.features.user.entity.User;
 import com.meneses.auth.exceptions.ResourceNotFoundException;
@@ -31,7 +31,7 @@ public class AuthService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponseDTO login(LoginRequestDTO request) {
 
         // Buscar usuario
         User user = userRepository.findByEmail(request.getEmail())
@@ -53,10 +53,10 @@ public class AuthService {
         // Gerar refresh token
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        return new LoginResponse(token, refreshToken, roles);
+        return new LoginResponseDTO(token, refreshToken, roles);
     }
 
-    public UserResponse register(RegisterRequest request) {
+    public UserResponseDTO register(RegisterRequestDTO request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email já cadastrado");
@@ -72,7 +72,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        UserResponse dto = new UserResponse(user.getEmail(),
+        UserResponseDTO dto = new UserResponseDTO(user.getEmail(),
                 user.getRoles().stream().map(Role::getName).toList());
         return dto;
     }

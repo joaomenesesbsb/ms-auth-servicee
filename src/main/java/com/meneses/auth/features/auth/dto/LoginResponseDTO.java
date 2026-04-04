@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginResponse {
+public class LoginResponseDTO {
     @Schema(description = "Token JWT. Use no header: Authorization: Bearer {token}",
             example = "eyJhbGciOiJIUzI1NiJ9...")
     private String token;

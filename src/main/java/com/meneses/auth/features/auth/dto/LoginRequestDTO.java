@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
+public class LoginRequestDTO {
     @Schema(description = "Email do usuário", example = "admin@email.com")
     private String email;
     @Schema(description = "Senha do usuário", example = "123456")

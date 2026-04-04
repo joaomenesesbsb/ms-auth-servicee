@@ -1,42 +1,63 @@
 package com.meneses.auth.features.user.controller;
 
-import com.meneses.auth.features.user.dto.RoleRequest;
-import com.meneses.auth.features.user.dto.UserResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import com.meneses.auth.features.user.dto.RoleRequestDTO;
+import com.meneses.auth.features.user.dto.UserRequestDTO;
+import com.meneses.auth.features.user.dto.UserResponseDTO;
+import com.meneses.auth.features.user.service.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Usuários", description = "Gerenciamento de usuários e permissões")
-public interface UserControllerImpl {
+@Tag(name = "Usuario")
+@RestController
+@RequestMapping("/users")
+@SecurityRequirement(name = "bearerAuth")
+@PreAuthorize("hasRole('ADMIN')")
+public class UserControllerImpl implements UserController {
 
-    @Operation(summary = "Busca usuário por ID")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
-            @ApiResponse(responseCode = "404", description = "Usuário não encontrado", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "403", description = "Acesso negado", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    ResponseEntity<UserResponse> findById(@PathVariable Long id);
+    @Autowired
+    private UserService userService;
 
-    @Operation(summary = "Atualiza dados do usuário")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Sucesso na atualização"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    })
-    ResponseEntity<UserResponse> update(@PathVariable Long id, @RequestBody UserResponse request);
+    @Override
+    public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id) {
+        UserResponseDTO response = userService.findById(id);
+        return ResponseEntity.ok(response);
+    }
 
-    @Operation(summary = "Lista usuários paginados")
-    ResponseEntity<Page<UserResponse>> findAll(@RequestParam String email, Pageable pageable);
+    @Override
+    public ResponseEntity<UserResponseDTO> update(
+            @PathVariable Long id,
+            @Valid @RequestBody UserRequestDTO request){
+        UserResponseDTO response = userService.update(id,request);
+        return ResponseEntity.ok(response);
+    }
 
-    @Operation(summary = "Adiciona Role ao usuário")
-    ResponseEntity<Void> addRole(@PathVariable Long id, @RequestBody RoleRequest request);
+    @Override
+    public ResponseEntity<Page<UserResponseDTO>> findAll(
+            @RequestParam(value = "email", defaultValue = "")
+            String email,
+            Pageable pageable) {
+        Page<UserResponseDTO> list = userService.findAll(email,pageable);
+        return ResponseEntity.ok(list);
+    }
+
+    @Override
+    public ResponseEntity<Void> addRole(
+            @PathVariable Long id,
+            @RequestBody RoleRequestDTO request) {
+        userService.addRoleToUser(id, request.getRoleName());
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> delete(Long id) {
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

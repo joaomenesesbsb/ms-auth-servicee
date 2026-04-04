@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleRequest {
+public class RoleRequestDTO {
     @Schema(description = "Nome do role a ser adicionado", example = "ROLE_ADMIN")
     private String roleName;
 }

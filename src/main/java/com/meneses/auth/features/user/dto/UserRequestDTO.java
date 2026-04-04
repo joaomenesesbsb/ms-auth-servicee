@@ -10,11 +10,10 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponse {
-    @Schema(description = "Email do usuario", example = "admin@email.com")
+public class UserRequestDTO {
+    @Schema(description = "Digite seu novo email", example = "admin@email.com")
     private String email;
     @Schema(description = "Lista de roles do usuario",
             example = "[\"ROLE_ADMIN\", \"ROLE_USER\"]")
     private List<String> roles;
-
 }
