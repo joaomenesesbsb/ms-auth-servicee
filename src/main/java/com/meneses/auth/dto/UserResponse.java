@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class UserResponse {
-    @Schema(description = "Email do usuario", example = "user@email.com")
+    @Schema(description = "Email do usuario", example = "admin@email.com")
     private String email;
     @Schema(description = "Lista de roles do usuario",
             example = "[\"ROLE_ADMIN\", \"ROLE_USER\"]")
