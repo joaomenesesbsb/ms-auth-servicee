@@ -72,8 +72,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        UserResponseDTO dto = new UserResponseDTO(user.getEmail(),
-                user.getRoles().stream().map(Role::getName).toList());
+        UserResponseDTO dto = new UserResponseDTO(user.getEmail());
         return dto;
     }
 }

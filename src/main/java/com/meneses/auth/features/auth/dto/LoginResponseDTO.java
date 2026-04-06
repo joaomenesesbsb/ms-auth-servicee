@@ -2,12 +2,11 @@ package com.meneses.auth.features.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponseDTO {
@@ -16,5 +15,5 @@ public class LoginResponseDTO {
     private String token;
     @Schema(description = "Token para renovação do JWT",
             example = "eyJhbGciOiJIUzI1NiJ9...")
-    private String refreshtoken;
+    private String refreshToken;
 }

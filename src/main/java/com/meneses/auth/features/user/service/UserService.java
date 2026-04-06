@@ -35,9 +35,7 @@ public class UserService {
                 () -> new ResourceNotFoundException("Usuario nao encontrado com o ID: " + id)
         );
 
-        UserResponseDTO response = new UserResponseDTO(user.getEmail(),user.getRoles()
-                .stream().map(Role::getName)
-                .collect(Collectors.toList()));
+        UserResponseDTO response = new UserResponseDTO(user.getEmail());
 
         return response;
     }
@@ -46,8 +44,7 @@ public class UserService {
     public Page<UserResponseDTO> findAll(String email, Pageable pageable) {
 
         Page<User> userPage = userRepository.findByEmailContainingIgnoreCase(email, pageable);
-        return userPage.map(user -> new UserResponseDTO(user.getEmail(),
-                user.getRoles().stream().map(Role::getName).collect(Collectors.toList())));
+        return userPage.map(user -> new UserResponseDTO(user.getEmail()));
     }
 
     @Transactional
@@ -86,12 +83,7 @@ public class UserService {
     }
 
     private UserResponseDTO mapToResponse(User user) {
-        return new UserResponseDTO(
-                user.getEmail(),
-                user.getRoles().stream()
-                        .map(Role::getName)
-                        .collect(Collectors.toList())
-        );
+        return new UserResponseDTO(user.getEmail());
     }
 
 }

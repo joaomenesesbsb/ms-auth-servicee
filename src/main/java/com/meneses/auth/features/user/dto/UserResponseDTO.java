@@ -13,8 +13,5 @@ import java.util.List;
 public class UserResponseDTO {
     @Schema(description = "Email cadastrado no sistema", example = "teste_update@email.com")
     private String email;
-    @Schema(description = "Lista de roles do usuario",
-            example = "[\"ROLE_ADMIN\", \"ROLE_USER\"]")
-    private List<String> roles;
 
 }

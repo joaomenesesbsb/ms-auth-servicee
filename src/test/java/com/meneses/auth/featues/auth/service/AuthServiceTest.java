@@ -74,7 +74,7 @@ class AuthServiceTest {
         // Assert
         assertNotNull(response);
         assertEquals("token-jwt", response.getToken());
-        assertEquals("ROLE_USER", response.getRoles().get(0));
+        assertEquals("refresh-token", response.getRefreshToken());
         verify(jwtService, times(1)).generateToken(user);
     }
 
