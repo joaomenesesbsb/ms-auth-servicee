@@ -25,7 +25,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // gerar token
     public String generateToken(User user) {
 
         List<String> roles = user.getRoles().stream()
@@ -41,7 +40,6 @@ public class JwtService {
                 .compact();
     }
 
-    // refresh token
     public String generateRefreshToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
@@ -51,18 +49,15 @@ public class JwtService {
                 .compact();
     }
 
-    // extrair email
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // extrair claims
     public <T> T extractClaim(String token, Function<Claims, T> resolver) {
         final Claims claims = extractAllClaims(token);
         return resolver.apply(claims);
     }
 
-    // validar token
     public boolean isTokenValid(String token, User user) {
         final String username = extractUsername(token);
         return username.equals(user.getEmail()) && !isTokenExpired(token);

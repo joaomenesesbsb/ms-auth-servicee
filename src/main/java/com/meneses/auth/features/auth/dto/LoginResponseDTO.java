@@ -17,7 +17,4 @@ public class LoginResponseDTO {
     @Schema(description = "Token para renovação do JWT",
             example = "eyJhbGciOiJIUzI1NiJ9...")
     private String refreshtoken;
-    @Schema(description = "Lista de roles do usuario",
-            example = "[\"ROLE_ADMIN\", \"ROLE_USER\"]")
-    private List<String> roles;
 }

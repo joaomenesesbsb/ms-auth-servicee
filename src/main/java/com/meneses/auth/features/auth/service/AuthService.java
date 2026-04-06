@@ -53,7 +53,7 @@ public class AuthService {
         // Gerar refresh token
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        return new LoginResponseDTO(token, refreshToken, roles);
+        return new LoginResponseDTO(token, refreshToken);
     }
 
     public UserResponseDTO register(RegisterRequestDTO request) {
