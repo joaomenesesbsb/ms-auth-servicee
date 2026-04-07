@@ -30,14 +30,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResponseDTO findById(Long id){
-
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Usuario nao encontrado com o ID: " + id)
-        );
-
-        UserResponseDTO response = new UserResponseDTO(user.getEmail());
-
-        return response;
+        return userRepository.findById(id)
+                .map(user -> new UserResponseDTO(user.getEmail()))
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
     }
 
     @Transactional(readOnly = true)
