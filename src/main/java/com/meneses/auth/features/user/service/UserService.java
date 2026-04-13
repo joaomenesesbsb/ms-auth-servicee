@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,9 +38,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Page<UserResponseDTO> findAll(String email, Pageable pageable) {
-
-        Page<User> userPage = userRepository.findByEmailContainingIgnoreCase(email, pageable);
-        return userPage.map(user -> new UserResponseDTO(user.getEmail()));
+        return userRepository
+                .findByEmailContainingIgnoreCase(email != null ? email : "", pageable)
+                .map(user -> new UserResponseDTO(user.getEmail()));
     }
 
     @Transactional
@@ -55,10 +56,11 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void addRoleToUser(Long userId, String roleName) {
 
-        User user = userRepository.findById(userId).orElseThrow();
-        Role role = roleRepository.findByName(roleName).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Usuario nao encontrado"));
+        Role role = roleRepository.findByName(roleName).orElseThrow(() -> new ResourceNotFoundException("Role nao encontrado"));
 
         user.getRoles().add(role);
         userRepository.save(user);

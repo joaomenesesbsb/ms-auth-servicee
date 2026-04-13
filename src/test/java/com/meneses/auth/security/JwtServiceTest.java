@@ -22,17 +22,14 @@ class JwtServiceTest {
     private JwtService jwtService;
     private User user;
 
-    // Uma chave base64 de 256 bits para teste
     private final String secretKey = "Zm9ydGUta2V5LXBhcmEtdGVzdGVzLWRlLXNlZ3VyYW5jYS1qYXZhLXNwcmluZw==";
 
     @BeforeEach
     void setUp() {
         jwtService = new JwtService();
 
-        // Injeta o valor do @Value manualmente no serviço
         ReflectionTestUtils.setField(jwtService, "secretKey", secretKey);
 
-        // Configura um usuário de teste
         Role role = new Role();
         role.setName("ROLE_USER");
 
