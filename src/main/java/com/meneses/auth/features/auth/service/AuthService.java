@@ -10,6 +10,7 @@ import com.meneses.auth.exceptions.ResourceNotFoundException;
 import com.meneses.auth.features.role.repository.RoleRepository;
 import com.meneses.auth.features.user.repository.UserRepository;
 import com.meneses.auth.security.JwtService;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,26 +32,21 @@ public class AuthService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public LoginResponseDTO login(LoginRequestDTO request) {
+    public LoginResponseDTO login(@NonNull LoginRequestDTO request) {
 
-        // Buscar usuario
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
-        // Busca roles do usuario
         List<String> roles = user.getRoles().stream()
                 .map(Role::getName)
                 .toList();
 
-        // Validar senha
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Senha inválida");
         }
 
-        // Gerar token JWT
         String token = jwtService.generateToken(user);
 
-        // Gerar refresh token
         String refreshToken = jwtService.generateRefreshToken(user);
 
         return new LoginResponseDTO(token, refreshToken);
