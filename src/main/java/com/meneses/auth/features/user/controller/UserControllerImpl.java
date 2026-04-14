@@ -7,6 +7,8 @@ import com.meneses.auth.features.user.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,21 +23,22 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("hasRole('ADMIN')")
 public class UserControllerImpl implements UserController {
 
+    private static final Logger logger = LogManager.getLogger(UserControllerImpl.class);
+
     @Autowired
     private UserService userService;
 
     @Override
     public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id) {
-        UserResponseDTO response = userService.findById(id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(userService.findById(id));
     }
 
     @Override
     public ResponseEntity<UserResponseDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody UserRequestDTO request){
-        UserResponseDTO response = userService.update(id,request);
-        return ResponseEntity.ok(response);
+        logger.info("Atualizando dados do usuário ID: [{}]", id);
+        return ResponseEntity.ok(userService.update(id,request));
     }
 
     @Override
@@ -51,12 +54,14 @@ public class UserControllerImpl implements UserController {
     public ResponseEntity<Void> addRole(
             @PathVariable Long id,
             @RequestBody RoleRequestDTO request) {
+        logger.info("Solicitação para adicionar role [{}] ao usuário ID: [{}]", request.getRoleName(), id);
         userService.addRoleToUser(id, request.getRoleName());
         return ResponseEntity.noContent().build();
     }
 
     @Override
     public ResponseEntity<Void> delete(Long id) {
+        logger.warn("Solicitação de exclusão do usuário ID: [{}]", id);
         userService.delete(id);
         return ResponseEntity.noContent().build();
     }
