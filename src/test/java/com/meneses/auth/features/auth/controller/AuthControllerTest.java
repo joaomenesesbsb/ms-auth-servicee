@@ -6,6 +6,8 @@ import com.meneses.auth.features.auth.dto.LoginResponseDTO;
 import com.meneses.auth.features.auth.dto.RegisterRequestDTO;
 import com.meneses.auth.features.auth.service.AuthService;
 import com.meneses.auth.features.user.dto.UserResponseDTO;
+import com.meneses.auth.security.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,11 +37,13 @@ class AuthControllerTest {
     @MockitoBean
     private AuthService authService;
 
+    @MockitoBean
+    private JwtService jwtService;
+
     @Nested
     class Login {
 
         @Test
-        @DisplayName("Deve realizar login com sucesso e retornar 200")
         void shouldReturn200_whenLoginIsSuccessful() throws Exception {
 
             LoginRequestDTO request = new LoginRequestDTO("test@email.com", "password123");
@@ -56,7 +60,6 @@ class AuthControllerTest {
         }
 
         @Test
-        @DisplayName("Deve retornar 400 quando o corpo da requisição de login for inválido")
         void shouldReturn400_whenLoginRequestIsInvalid() throws Exception {
 
             mockMvc.perform(post("/auth/login")
@@ -69,12 +72,12 @@ class AuthControllerTest {
 
     @Nested
     class Register{
+
         @Test
-        @DisplayName("Deve registrar um usuário com sucesso e retornar 201")
         void shouldReturn201_whenUserIsRegistered() throws Exception {
 
-            RegisterRequestDTO request = new RegisterRequestDTO("novo@email.com", "senha123");
-            UserResponseDTO response = new UserResponseDTO("novo@email.com");
+            RegisterRequestDTO request = new RegisterRequestDTO("new@email.com", "password123");
+            UserResponseDTO response = new UserResponseDTO("new@email.com");
 
             Mockito.when(authService.register(Mockito.any(RegisterRequestDTO.class))).thenReturn(response);
 
@@ -82,11 +85,39 @@ class AuthControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.email").value("novo@email.com"));
+                    .andExpect(jsonPath("$.email").value("new@email.com"));
         }
     }
 
+    @Nested
+    class Logout {
 
+        @Test
+        void shouldReturn204_whenLogoutIsSuccessful() throws Exception {
+            String token = "valid-jwt-token";
+            String authHeader = "Bearer " + token;
+
+            Mockito.when(jwtService.extractToken(Mockito.any(HttpServletRequest.class)))
+                    .thenReturn(token);
+
+            mockMvc.perform(post("/auth/logout")
+                            .header("Authorization", authHeader))
+                    .andExpect(status().isNoContent());
+
+            Mockito.verify(authService, Mockito.times(1)).logout(token);
+        }
+
+        @Test
+        void shouldReturn204_whenTokenIsNull() throws Exception {
+            Mockito.when(jwtService.extractToken(Mockito.any(HttpServletRequest.class)))
+                    .thenReturn(null);
+
+            mockMvc.perform(post("/auth/logout"))
+                    .andExpect(status().isNoContent());
+
+            Mockito.verify(authService, Mockito.times(1)).logout(null);
+        }
+    }
 
 
 }

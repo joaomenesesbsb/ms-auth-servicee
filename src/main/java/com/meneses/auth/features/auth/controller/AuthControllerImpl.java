@@ -48,10 +48,6 @@ public class AuthControllerImpl implements AuthController{
     @Override
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         String token = jwtService.extractToken(request);
-        System.out.println("token");
-        System.out.println(token);
-        System.out.println("request");
-        System.out.println(request);
         authService.logout(token);
         return ResponseEntity.noContent().build();
     }
