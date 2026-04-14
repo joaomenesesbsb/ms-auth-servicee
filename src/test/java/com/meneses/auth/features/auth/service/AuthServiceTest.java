@@ -9,6 +9,7 @@ import com.meneses.auth.features.role.repository.RoleRepository;
 import com.meneses.auth.features.user.entity.User;
 import com.meneses.auth.features.user.repository.UserRepository;
 import com.meneses.auth.security.JwtService;
+import com.meneses.auth.security.TokenBlacklistService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -38,7 +39,7 @@ class AuthServiceTest {
     private JwtService jwtService;
 
     @Mock
-    private RoleRepository roleRepository;
+    private TokenBlacklistService blacklistService;
 
     @InjectMocks
     private AuthService authService;
@@ -122,6 +123,33 @@ class AuthServiceTest {
 
             assertEquals("Email já cadastrado", exception.getMessage());
             verify(userRepository, never()).save(any());
+        }
+    }
+
+    @Nested
+    class Logout {
+
+        @Test
+        @DisplayName("Deve adicionar token na blacklist com sucesso quando o token for válido")
+        void shouldBlacklistToken_whenValid() {
+
+            String token = "valid.jwt.token";
+            long expirationSeconds = 3600L;
+            when(jwtService.getExpirationInSeconds(token)).thenReturn(expirationSeconds);
+
+            authService.logout(token);
+
+            verify(jwtService, times(1)).getExpirationInSeconds(token);
+            verify(blacklistService, times(1)).blacklistToken(token, expirationSeconds);
+        }
+
+        @Test
+        @DisplayName("Não deve interagir com serviços se o token for nulo")
+        void shouldNotBlacklist_whenTokenIsNull() {
+            authService.logout(null);
+
+            verifyNoInteractions(jwtService);
+            verifyNoInteractions(blacklistService);
         }
     }
 
