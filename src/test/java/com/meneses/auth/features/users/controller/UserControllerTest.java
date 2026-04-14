@@ -3,6 +3,7 @@ package com.meneses.auth.features.users.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meneses.auth.exceptions.ResourceNotFoundException;
 import com.meneses.auth.features.user.controller.UserController;
+import com.meneses.auth.features.user.dto.RoleRequestDTO;
 import com.meneses.auth.features.user.dto.UserRequestDTO;
 import com.meneses.auth.features.user.dto.UserResponseDTO;
 import com.meneses.auth.features.user.repository.UserRepository;
@@ -25,7 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -59,7 +60,7 @@ public class UserControllerTest {
 
     @Nested
     @DisplayName("Testes de findById")
-    class findById {
+    class FindById {
 
         @Test
         @DisplayName("Deve retornar 200 e o DTO quando o usuário existir")
@@ -130,7 +131,6 @@ public class UserControllerTest {
         }
     }
 
-
     @Nested
     @DisplayName("Testes de FindAll (Paginação e Filtro)")
     class FindAll {
@@ -162,6 +162,52 @@ public class UserControllerTest {
             mockMvc.perform(get("/users")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    @DisplayName("Teste de adicinar Role")
+    class AddRole {
+
+        @Test
+        @DisplayName("Deve retornar 204 ao adicionar role com sucesso")
+        void shouldReturnNoContent_whenAddRoleIsSuccessful() throws Exception {
+            RoleRequestDTO dto = new RoleRequestDTO("ROLE_ADMIN");
+
+            mockMvc.perform(post("/users/{id}/roles", VALID_ID)
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(dto)))
+                    .andExpect(status().isNoContent());
+
+            verify(userService, times(1)).addRoleToUser(VALID_ID, dto.getRoleName());
+        }
+    }
+
+    @Nested
+    @DisplayName("Testes de Delecao")
+    class Delete {
+
+        @Test
+        @DisplayName("Deve retornar 204 ao deletar usuário com sucesso")
+        void shouldReturnNoContent_whenDeleteIsSuccessful() throws Exception {
+
+            mockMvc.perform(delete("/users/{id}", VALID_ID)
+                            .with(csrf()))
+                    .andExpect(status().isNoContent());
+
+            verify(userService, times(1)).delete(VALID_ID);
+        }
+
+        @Test
+        @DisplayName("Deve retornar 404 ao tentar deletar um usuário inexistente")
+        void shouldReturnNotFound_whenDeleteUserDoesNotExist() throws Exception {
+            doThrow(new ResourceNotFoundException("User not found"))
+                    .when(userService).delete(99L);
+
+            mockMvc.perform(delete("/users/{id}", 99L)
+                            .with(csrf()))
+                    .andExpect(status().isNotFound());
         }
     }
 }
