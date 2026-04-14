@@ -30,7 +30,6 @@ public class AuthControllerImpl implements AuthController{
 
         LoginResponseDTO loginResponseDTO = authService.login(request);
 
-        logger.info("Login realizado com sucesso para o usuário: [{}]", request.getEmail());
         return ResponseEntity.ok(loginResponseDTO);
     }
 
@@ -39,8 +38,6 @@ public class AuthControllerImpl implements AuthController{
         logger.info("Solicitação de registro para o e-mail: [{}]", request.getEmail());
 
         UserResponseDTO response = authService.register(request);
-
-        logger.info("Usuário registrado com sucesso. Email: [{}]", response.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

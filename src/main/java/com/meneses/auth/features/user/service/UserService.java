@@ -9,6 +9,8 @@ import com.meneses.auth.features.user.entity.User;
 import com.meneses.auth.features.user.dto.UserResponseDTO;
 import com.meneses.auth.features.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
+    private static final Logger logger = LogManager.getLogger(UserService.class);
+
     @Autowired
     private UserRepository userRepository;
 
@@ -32,8 +36,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponseDTO findById(Long id){
         return userRepository.findById(id)
-                .map(user -> new UserResponseDTO(user.getEmail()))
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
+                .map(user -> {
+                    logger.warn("Tentativa de buscar usuário inexistente. ID: [{}]", id);
+                    return new UserResponseDTO(user.getEmail());
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
     }
 
     @Transactional(readOnly = true)
@@ -49,10 +56,13 @@ public class UserService {
             User entity = userRepository.getReferenceById(id);
             entity.setEmail(responseDto.getEmail());
             entity = userRepository.save(entity);
+
+            logger.info("Usuário do email [{}] atualizado com sucesso.", responseDto.getEmail());
             return mapToResponse(entity);
         }
         catch (EntityNotFoundException e){
-            throw  new ResourceNotFoundException("Usuario nao enconntrado com o ID: " + id);
+            logger.error("Falha ao atualizar: Usuário com email: [{}] não encontrado.", responseDto.getEmail());
+            throw  new ResourceNotFoundException("Usuario nao enconntrado");
         }
     }
 
@@ -64,17 +74,22 @@ public class UserService {
 
         user.getRoles().add(role);
         userRepository.save(user);
+
+        logger.info("Role [{}] vinculada ao usuário ID [{}] com sucesso.", roleName, userId);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void delete(Long id){
         if (!userRepository.existsById(id)) {
+            logger.warn("Tentativa de excluir usuário inexistente. ID: [{}]", id);
             throw new ResourceNotFoundException("Usuário não encontrado com o ID: " + id);
         }
         try{
             userRepository.deleteById(id);
+            logger.warn("Usuário ID [{}] removido com sucesso.", id);
         }
         catch (DataIntegrityViolationException e) {
+            logger.error("Violação de integridade ao deletar usuário ID [{}].", id);
             throw new DataBaseException("Não é possível remover o usuário: violação de integridade.");
         }
     }
